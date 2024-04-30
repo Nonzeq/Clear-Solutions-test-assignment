@@ -1,6 +1,7 @@
 package com.kobylchak.clearsolutions.exception.handler;
 
 import com.kobylchak.clearsolutions.exception.UserCreatingException;
+import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.http.HttpHeaders;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -26,19 +28,50 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
             WebRequest request) {
         ErrorWrapper errorWrapper = new ErrorWrapper();
         errorWrapper.setErrors(getErrorMessages(ex, status));
-        
         return new ResponseEntity<>(errorWrapper, headers, status);
+    }
+    
+    @Override
+    protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(
+            HttpRequestMethodNotSupportedException ex,
+            HttpHeaders headers,
+            HttpStatusCode status,
+            WebRequest request) {
+        ErrorWrapper errorWrapper = new ErrorWrapper();
+        errorWrapper.setErrors(getErrorMessages(ex,status));
+        return new ResponseEntity<>(errorWrapper, headers, status);
+    }
+    
+    private List<ErrorData> getErrorMessages(
+            HttpRequestMethodNotSupportedException ex,
+            HttpStatusCode status) {
+        ErrorData errorData = new ErrorData();
+        errorData.setMessage(ex.getMessage());
+        errorData.setStatus(status.value());
+        errorData.setTimestamp(LocalDateTime.now());
+        return List.of(errorData);
     }
     
     @ExceptionHandler({UserCreatingException.class})
     public ResponseEntity<Object> handleUserCreatingException(UserCreatingException exception) {
+        ErrorWrapper errorWrapper = getErrorMessages(exception);
+        return new ResponseEntity<>(errorWrapper, HttpStatus.BAD_REQUEST);
+    }
+    
+    @ExceptionHandler({EntityNotFoundException.class})
+    public ResponseEntity<Object> handleEntityNoFoundException(EntityNotFoundException exception) {
+        ErrorWrapper errorWrapper = getErrorMessages(exception);
+        return new ResponseEntity<>(errorWrapper, HttpStatus.BAD_REQUEST);
+    }
+    
+    private ErrorWrapper getErrorMessages(Exception exception) {
         ErrorWrapper errorWrapper = new ErrorWrapper();
         ErrorData errorData = new ErrorData();
         errorData.setTimestamp(LocalDateTime.now());
         errorData.setMessage(exception.getMessage());
         errorData.setStatus(HttpStatus.BAD_REQUEST.value());
         errorWrapper.setErrors(List.of(errorData));
-        return new ResponseEntity<>(errorWrapper, HttpStatus.BAD_REQUEST);
+        return errorWrapper;
     }
     
     private List<ErrorData> getErrorMessages(MethodArgumentNotValidException ex,

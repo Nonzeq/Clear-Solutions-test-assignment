@@ -63,8 +63,13 @@ public class UserServiceImpl implements UserService {
     
     @Override
     public List<UserResponseDto> searchByBirthDate(BirthDateSearchingParams params) {
-        List<User> users = userRepository.findAllByBirthDateBetween(params.getFrom(),
-                                                                    params.getTo());
+        List<User> users = userRepository.findAllByBirthDateBetween(params.getFromDate(),
+                                                                    params.getToDate());
         return userMapper.toDtos(users);
+    }
+    
+    @Override
+    public List<UserResponseDto> getAll() {
+        return userMapper.toDtos(userRepository.findAll());
     }
 }

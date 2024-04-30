@@ -2,11 +2,11 @@ package com.kobylchak.clearsolutions.controller;
 
 import com.kobylchak.clearsolutions.dto.BirthDateSearchingParams;
 import com.kobylchak.clearsolutions.dto.CreateUserRequestDto;
+import com.kobylchak.clearsolutions.dto.DataWrapper;
 import com.kobylchak.clearsolutions.dto.UpdateUserRequestDto;
 import com.kobylchak.clearsolutions.dto.UserResponseDto;
 import com.kobylchak.clearsolutions.service.UserService;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,28 +29,35 @@ public class UserController {
     
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<UserResponseDto> searchUsersByBirth(@Valid BirthDateSearchingParams params) {
-        return userService.searchByBirthDate(params);
+    public DataWrapper<UserResponseDto> getAllUsers() {
+        return new DataWrapper<>(userService.getAll());
+    }
+    
+    @GetMapping("/search-by-birth")
+    @ResponseStatus(HttpStatus.OK)
+    public DataWrapper<UserResponseDto> searchUsersByBirth(@Valid BirthDateSearchingParams params) {
+        return new DataWrapper<>(userService.searchByBirthDate(params));
     }
     
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserResponseDto createUser(@RequestBody @Valid CreateUserRequestDto requestDto) {
-        return userService.create(requestDto);
+    public DataWrapper<UserResponseDto> createUser(
+            @RequestBody @Valid CreateUserRequestDto requestDto) {
+        return new DataWrapper<>(userService.create(requestDto));
     }
     
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public UserResponseDto updateUserFields(@PathVariable Long id,
+    public DataWrapper<UserResponseDto> updateUserFields(@PathVariable Long id,
                                             @RequestBody @Valid UpdateUserRequestDto requestDto) {
-        return userService.updateFields(id, requestDto);
+        return new DataWrapper<>(userService.updateFields(id, requestDto));
     }
     
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public UserResponseDto updateUser(@PathVariable Long id,
+    public DataWrapper<UserResponseDto> updateUser(@PathVariable Long id,
                                       @RequestBody @Valid CreateUserRequestDto requestDto) {
-        return userService.update(id, requestDto);
+        return new DataWrapper<>(userService.update(id, requestDto));
     }
     
     @DeleteMapping("/{id}")

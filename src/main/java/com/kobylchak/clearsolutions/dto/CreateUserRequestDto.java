@@ -7,7 +7,6 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
-import org.springframework.beans.factory.annotation.Value;
 
 @Data
 public class CreateUserRequestDto {
@@ -24,5 +23,4 @@ public class CreateUserRequestDto {
     private LocalDate birthDate;
     private String address;
     private String phoneNumber;
-    
 }

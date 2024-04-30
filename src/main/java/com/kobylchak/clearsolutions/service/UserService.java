@@ -17,4 +17,6 @@ public interface UserService {
     void delete(Long id);
     
     List<UserResponseDto> searchByBirthDate(BirthDateSearchingParams params);
+    
+    List<UserResponseDto> getAll();
 }
