@@ -20,6 +20,18 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler {
     
+    @ExceptionHandler({UserCreatingException.class})
+    public ResponseEntity<Object> handleUserCreatingException(UserCreatingException exception) {
+        ErrorWrapper errorWrapper = getErrorMessages(exception);
+        return new ResponseEntity<>(errorWrapper, HttpStatus.BAD_REQUEST);
+    }
+    
+    @ExceptionHandler({EntityNotFoundException.class})
+    public ResponseEntity<Object> handleEntityNoFoundException(EntityNotFoundException exception) {
+        ErrorWrapper errorWrapper = getErrorMessages(exception);
+        return new ResponseEntity<>(errorWrapper, HttpStatus.BAD_REQUEST);
+    }
+    
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex,
@@ -50,18 +62,6 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
         errorData.setStatus(status.value());
         errorData.setTimestamp(LocalDateTime.now());
         return List.of(errorData);
-    }
-    
-    @ExceptionHandler({UserCreatingException.class})
-    public ResponseEntity<Object> handleUserCreatingException(UserCreatingException exception) {
-        ErrorWrapper errorWrapper = getErrorMessages(exception);
-        return new ResponseEntity<>(errorWrapper, HttpStatus.BAD_REQUEST);
-    }
-    
-    @ExceptionHandler({EntityNotFoundException.class})
-    public ResponseEntity<Object> handleEntityNoFoundException(EntityNotFoundException exception) {
-        ErrorWrapper errorWrapper = getErrorMessages(exception);
-        return new ResponseEntity<>(errorWrapper, HttpStatus.BAD_REQUEST);
     }
     
     private ErrorWrapper getErrorMessages(Exception exception) {
