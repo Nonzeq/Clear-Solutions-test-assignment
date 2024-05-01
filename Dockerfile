@@ -1,5 +1,6 @@
 # Builder stage
 FROM openjdk:17-jdk-alpine as builder
+ENV ASPNETCORE_ENVIRONMENT=Development
 WORKDIR application
 ARG JAR_FILE=target/*.jar
 COPY ${JAR_FILE} application.jar
@@ -12,5 +13,5 @@ COPY --from=builder application/dependencies/ ./
 COPY --from=builder application/spring-boot-loader/ ./
 COPY --from=builder application/snapshot-dependencies/ ./
 COPY --from=builder application/application/ ./
-ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]
+ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher", "--environment=Development"]
 EXPOSE 8080

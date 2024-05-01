@@ -10,7 +10,7 @@ services:
       - MYSQL_DATABASE=$MYSQLDB_DATABASE
     ports:
       - $MYSQLDB_LOCAL_PORT:$MYSQLDB_DOCKER_PORT
-  online_book_store:
+  clear_solutions_task:
     depends_on:
       - mysqldb
     build: .
@@ -26,5 +26,5 @@ services:
         "spring.jpa.hibernate.ddl-auto" : "$HIBERNATE_DDL_AUTO",
         "spring.jpa.show-sql" : "$SHOW_SQL",
         "springdoc.swagger-ui.disable-swagger-default-url" : "$DISABLE_SWAGGER_DEFAULT_URL",
-        "springdoc.swagger-ui.path" : "$SWAGGER_PATH",
+        "springdoc.swagger-ui.path" : "$SWAGGER_PATH"
       }'
