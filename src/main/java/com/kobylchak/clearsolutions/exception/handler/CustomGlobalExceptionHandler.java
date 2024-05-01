@@ -8,18 +8,18 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler {
-    
     @ExceptionHandler({UserCreatingException.class})
     public ResponseEntity<Object> handleUserCreatingException(UserCreatingException exception) {
         ErrorWrapper errorWrapper = getErrorMessages(exception);
@@ -30,6 +30,17 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
     public ResponseEntity<Object> handleEntityNoFoundException(EntityNotFoundException exception) {
         ErrorWrapper errorWrapper = getErrorMessages(exception);
         return new ResponseEntity<>(errorWrapper, HttpStatus.BAD_REQUEST);
+    }
+    
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(
+            HttpMessageNotReadableException ex,
+            HttpHeaders headers,
+            HttpStatusCode status,
+            WebRequest request) {
+        ErrorWrapper errorWrapper = new ErrorWrapper();
+        errorWrapper.setErrors(getErrorMessages(ex, status));
+        return new ResponseEntity<>(errorWrapper, headers, status);
     }
     
     @Override
@@ -52,6 +63,16 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
         ErrorWrapper errorWrapper = new ErrorWrapper();
         errorWrapper.setErrors(getErrorMessages(ex,status));
         return new ResponseEntity<>(errorWrapper, headers, status);
+    }
+    
+    private List<ErrorData> getErrorMessages(
+            HttpMessageNotReadableException ex,
+            HttpStatusCode status) {
+        ErrorData errorData = new ErrorData();
+        errorData.setMessage(ex.getMessage());
+        errorData.setStatus(status.value());
+        errorData.setTimestamp(LocalDateTime.now());
+        return List.of(errorData);
     }
     
     private List<ErrorData> getErrorMessages(
