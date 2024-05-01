@@ -1,11 +1,14 @@
 package com.kobylchak.clearsolutions.dto;
 
 import java.util.List;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class DataWrapper<T> {
-    private final List<T> data;
+    private List<T> data;
     
     public DataWrapper(List<T> data) {
         this.data = data;
