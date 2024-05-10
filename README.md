@@ -7,4 +7,4 @@
 5) Run ```mvn clean package```
 6) Run ``` docker-compose up ``` command to start containers
 7) Use default link to [Swagger](http://localhost:8081/api/v1/swagger) 
-8) Use custom link http://localhost:{SPRING_LOCAL_PORT}/SWAGGER_PATH}
+8) Use custom link http://localhost:{SPRING_LOCAL_PORT}/{SWAGGER_PATH}
